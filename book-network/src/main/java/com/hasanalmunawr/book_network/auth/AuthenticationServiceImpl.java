@@ -67,28 +67,22 @@ class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void activateAccount(String token) {
-        try {
-            TokenEntity savedToken = tokenRepository.findByToken(token)
-                    .orElseThrow(() -> new RuntimeException("Invalid token"));
-
-            if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
-                sendValidationEmail(savedToken.getUser(), EmailTemplateName.ACTIVATE_ACCOUNT);
-                throw new RuntimeException("Activation token has expired. A new token has been send to the same email address");
-            }
-
-            var user = userRepository.findById(savedToken.getUser().getId())
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-            user.setEnabled(true);
-            userRepository.save(user);
-
-            savedToken.setValidatedAt(LocalDateTime.now());
-            tokenRepository.save(savedToken);
-
-        } catch (RuntimeException | MessagingException ex) {
-            log.error("Failed to validate token: {}", token, ex);
-
+    public void activateAccount(String token) throws MessagingException {
+        TokenEntity savedToken = tokenRepository.findByToken(token)
+                // todo exception has to be defined
+                .orElseThrow(() -> new RuntimeException("Invalid token"));
+        if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
+            sendValidationEmail(savedToken.getUser(), EmailTemplateName.ACTIVATE_ACCOUNT);
+            throw new RuntimeException("Activation token has expired. A new token has been send to the same email address");
         }
+
+        var user = userRepository.findById(savedToken.getUser().getId())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        user.setEnabled(true);
+        userRepository.save(user);
+
+        savedToken.setValidatedAt(LocalDateTime.now());
+        tokenRepository.save(savedToken);
     }
 
     @Override
