@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("books")
 @RequiredArgsConstructor
 @Tag(name = "Book")
+@Slf4j
 public class BookController {
 
     private final BookService service;
@@ -40,6 +42,7 @@ public class BookController {
             @RequestParam(name = "size", defaultValue = "10", required = false) int size,
             Authentication connectedUser
     ) {
+        log.info("[BookController:findAllBooks] id user {}", connectedUser.getName());
         return ResponseEntity.ok(service.findAllBooks(page, size, connectedUser));
     }
 

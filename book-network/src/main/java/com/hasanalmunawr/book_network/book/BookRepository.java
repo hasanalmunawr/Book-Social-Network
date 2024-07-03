@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface BookRepository extends JpaRepository<BookEntity, Integer>, JpaSpecificationExecutor<BookEntity> {
 
@@ -17,4 +19,5 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer>, JpaS
             AND b.owner.id  != :userId
             """)
     Page<BookEntity> findAllDisplayableBooks(Pageable pageable, Integer userId);
+
 }

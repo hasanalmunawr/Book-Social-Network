@@ -9,7 +9,9 @@ import com.hasanalmunawr.book_network.service.BookService;
 import com.hasanalmunawr.book_network.user.UserEntity;
 import com.hasanalmunawr.book_network.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +27,7 @@ import static com.hasanalmunawr.book_network.book.BookSpecification.withOwnerId;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
@@ -51,8 +54,9 @@ class BookServiceImpl implements BookService {
     @Override
     public PageResponse<BookResponse> findAllBooks(int page, int size, Authentication connectedUser) {
         UserEntity user = ((UserEntity) connectedUser.getPrincipal());
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page, size);
         Page<BookEntity> books = bookRepository.findAllDisplayableBooks(pageable, user.getId());
+        log.info("[BookServiceImpl:FIndAllBooksByOwner] user id {}", user.getId());
         List<BookResponse> booksResponse = books.stream()
                 .map(bookMapper::toBookResponse)
                 .toList();
