@@ -1,6 +1,6 @@
 # Book Social Network
 
-A software able to upload and share an e-book
+A fullstack web which able to upload and share an e-book
 
 
 ## Getting Started
