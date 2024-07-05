@@ -1,6 +1,7 @@
 package com.hasanalmunawr.book_network.configuration;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
@@ -18,6 +19,7 @@ import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.springframework.http.HttpHeaders.*;
 
@@ -28,8 +30,8 @@ public class ApplicationConfig {
 
     private final UserDetailsService userDetailsService;
 
-//    @Value("${application.cors.origins:*}")
-//    private List<String> allowedOrigin;
+    @Value("${application.cors.origins:*}")
+    private List<String> allowedOrigin;
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -54,38 +56,38 @@ public class ApplicationConfig {
         return new ApplicationAuditAware();
     }
 
-    @Bean
-    public CorsFilter corsFilter() {
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        final CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
-        config.setAllowedHeaders(Arrays.asList(
-                ORIGIN,
-                CONTENT_TYPE,
-                ACCEPT,
-                AUTHORIZATION
-        ));
-        config.setAllowedMethods(Arrays.asList(
-                "GET",
-                "POST",
-                "PUT",
-                "DELETE",
-                "OPTIONS"));
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
-    }
 //    @Bean
 //    public CorsFilter corsFilter() {
 //        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 //        final CorsConfiguration config = new CorsConfiguration();
-//        // config.setAllowCredentials(true);
-//        config.setAllowedOrigins(allowedOrigin);
-//        config.setAllowedHeaders(Arrays.asList("*"));
-//        config.setAllowedMethods(Arrays.asList("*"));
+//        config.setAllowCredentials(true);
+//        config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+//        config.setAllowedHeaders(Arrays.asList(
+//                ORIGIN,
+//                CONTENT_TYPE,
+//                ACCEPT,
+//                AUTHORIZATION
+//        ));
+//        config.setAllowedMethods(Arrays.asList(
+//                "GET",
+//                "POST",
+//                "PUT",
+//                "DELETE",
+//                "OPTIONS"));
 //        source.registerCorsConfiguration("/**", config);
 //        return new CorsFilter(source);
-//
 //    }
+    @Bean
+    public CorsFilter corsFilter() {
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        final CorsConfiguration config = new CorsConfiguration();
+        // config.setAllowCredentials(true);
+        config.setAllowedOrigins(allowedOrigin);
+        config.setAllowedHeaders(Arrays.asList("*"));
+        config.setAllowedMethods(Arrays.asList("*"));
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+
+    }
 
 }
