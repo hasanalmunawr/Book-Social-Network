@@ -123,4 +123,9 @@ public class BookController {
         service.uploadBookCoverPicture(file, connectedUser, bookId);
         return ResponseEntity.accepted().build();
     }
+
+    @GetMapping("/hello")
+    public ResponseEntity<String> hello() {
+        return ResponseEntity.ok("Hello Oauth2");
+    }
 }
