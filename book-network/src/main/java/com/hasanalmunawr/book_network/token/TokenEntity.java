@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+//@Entity
 public class TokenEntity {
 
     @Id
@@ -28,7 +28,7 @@ public class TokenEntity {
     @Column(name = "validated_at")
     private LocalDateTime validatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
-    private UserEntity user;
+//    @ManyToOne
+//    @JoinColumn(name = "userId", nullable = false)
+//    private UserEntity user;
 }

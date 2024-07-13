@@ -22,8 +22,8 @@ import java.util.Collection;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "_user")
+//@Entity
+//@Table(name = "_user")
 public class UserEntity extends BaseEntity implements UserDetails, Principal{
 
     private String firstname;

@@ -9,13 +9,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/auth")
+//@RestController
+//@RequestMapping("/auth")
 @RequiredArgsConstructor
 @Tag(name = "Authentication")
 @Slf4j
 class AuthenticationController {
 
+    /*
     private final AuthenticationServiceImpl service;
 
     @PostMapping("/register")
@@ -41,6 +42,8 @@ class AuthenticationController {
     ) throws MessagingException {
         return ResponseEntity.ok(service.login(request));
     }
+
+     */
 
 
 }

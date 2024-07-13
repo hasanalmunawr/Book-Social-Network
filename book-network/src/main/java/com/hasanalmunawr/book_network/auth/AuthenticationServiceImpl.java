@@ -26,13 +26,14 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Optional;
 
-@Service
+//@Service
 @RequiredArgsConstructor
 @Slf4j
-class AuthenticationServiceImpl implements AuthenticationService {
+class AuthenticationServiceImpl {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    /*
+//    private final UserRepository userRepository;
+//    private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final JwtService jwtService;
     private final TokenRepository tokenRepository;
@@ -56,7 +57,7 @@ class AuthenticationServiceImpl implements AuthenticationService {
                 .firstname(request.firstName())
                 .lastname(request.lastName())
                 .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
+//                .password(passwordEncoder.encode(request.password()))
                 .accountLocked(false)
                 .enabled(false)
                 .role(convertToRole(request.role()))
@@ -72,14 +73,14 @@ class AuthenticationServiceImpl implements AuthenticationService {
                 // todo exception has to be defined
                 .orElseThrow(() -> new RuntimeException("Invalid token"));
         if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
-            sendValidationEmail(savedToken.getUser(), EmailTemplateName.ACTIVATE_ACCOUNT);
+//            sendValidationEmail(savedToken.getUser(), EmailTemplateName.ACTIVATE_ACCOUNT);
             throw new RuntimeException("Activation token has expired. A new token has been send to the same email address");
         }
 
-        var user = userRepository.findById(savedToken.getUser().getId())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        user.setEnabled(true);
-        userRepository.save(user);
+//        var user = userRepository.findById(savedToken.getUser().getId())
+//                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+//        user.setEnabled(true);
+//        userRepository.save(user);
 
         savedToken.setValidatedAt(LocalDateTime.now());
         tokenRepository.save(savedToken);
@@ -138,7 +139,7 @@ class AuthenticationServiceImpl implements AuthenticationService {
                 .token(generatedToken)
                 .createdAt(LocalDateTime.now())
                 .expiresAt(LocalDateTime.now().plusMinutes(15))
-                .user(user)
+//                .user(user)
                 .build();
         tokenRepository.save(token);
 
@@ -158,4 +159,6 @@ class AuthenticationServiceImpl implements AuthenticationService {
 
         return codeBuilder.toString();
     }
+
+     */
 }

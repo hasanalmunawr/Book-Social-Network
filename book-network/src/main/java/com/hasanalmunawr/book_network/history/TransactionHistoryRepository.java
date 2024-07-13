@@ -16,11 +16,11 @@ public interface TransactionHistoryRepository extends JpaRepository<TransactionH
     @Query("""
             SELECT (COUNT (*) > 0) AS isBorrowed
             FROM TransactionHistoryEntity th
-            WHERE th.user.id = :userId
+            WHERE th.userId = :userId
             AND th.book.id = :bookId
             AND th.returnApproved = false 
             """)
-    boolean isAlreadyBorrowedByUser(@Param("bookId") Integer bookId, @Param("userId") Integer userId);
+    boolean isAlreadyBorrowedByUser(@Param("bookId") Integer bookId, @Param("userId") String userId);
 
     @Query("""
             SELECT (COUNT (*) > 0) AS isBorrowed
@@ -33,35 +33,35 @@ public interface TransactionHistoryRepository extends JpaRepository<TransactionH
     @Query("""
             SELECT history
             FROM TransactionHistoryEntity history
-            WHERE history.user.id = :userId
+            WHERE history.userId = :userId
             AND history.book.id = :bookId
             AND history.returnApproved = false
             AND history.returned = false 
             """)
-    Optional<TransactionHistoryEntity> findByBookIdAndUserId(@Param("bookId") Integer bookId, @Param("userId") Integer userId);
+    Optional<TransactionHistoryEntity> findByBookIdAndUserId(@Param("bookId") Integer bookId, @Param("userId") String userId);
 
     @Query("""
             SELECT history
             FROM TransactionHistoryEntity history
-            WHERE history.book.owner.id = :userId
+            WHERE history.book.createdBy = :userId
             AND history.book.id = :bookId
             AND history.returned = true
             AND history.returnApproved = false
             """)
-    Optional<TransactionHistoryEntity> findByBookIdAndOwnerId(@Param("bookId") Integer bookId, @Param("userId") Integer userId);
+    Optional<TransactionHistoryEntity> findByBookIdAndOwnerId(@Param("bookId") Integer bookId, @Param("userId") String userId);
 
     @Query("""
             SELECT history
             FROM TransactionHistoryEntity history
-            WHERE history.user.id = :userId
+            WHERE history.userId = :userId
             """)
-    Page<TransactionHistoryEntity> findAllBorrowedBooks(Pageable pageable, Integer userId);
+    Page<TransactionHistoryEntity> findAllBorrowedBooks(Pageable pageable, String userId);
 
     @Query("""
             SELECT history
             FROM TransactionHistoryEntity history
-            WHERE history.book.owner.id = :userId
+            WHERE history.book.createdBy = :userId
             """)
-    Page<TransactionHistoryEntity> findAllReturnedBooks(Pageable pageable, Integer userId);
+    Page<TransactionHistoryEntity> findAllReturnedBooks(Pageable pageable, String userId);
 
 }

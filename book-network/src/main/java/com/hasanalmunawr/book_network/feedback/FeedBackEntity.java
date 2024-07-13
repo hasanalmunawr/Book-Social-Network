@@ -26,7 +26,4 @@ public class FeedBackEntity extends BaseEntity {
     @JoinColumn(name = "book_id")
     private BookEntity book;
 
-    @CreatedBy
-    @Column(nullable = false, updatable = false)
-    private Integer createdBy;
 }

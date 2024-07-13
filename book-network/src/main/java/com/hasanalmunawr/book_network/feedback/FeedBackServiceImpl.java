@@ -35,8 +35,8 @@ public class FeedBackServiceImpl implements FeedBackService {
             throw new OperationNotPermittedException("You cannot give a feedback for and archived or not shareable book");
         }
 
-        UserEntity user = ((UserEntity) connectedUser.getPrincipal());
-        if (Objects.equals(book.getOwner().getId(), user.getId())) {
+//        UserEntity user = ((UserEntity) connectedUser.getPrincipal());
+        if (Objects.equals(book.getCreatedBy(), connectedUser.getName())) {
             throw new OperationNotPermittedException("You cannot give feedback to your own book");
         }
 

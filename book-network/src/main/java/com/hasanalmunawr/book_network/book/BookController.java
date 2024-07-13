@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -89,7 +90,7 @@ public class BookController {
         return ResponseEntity.ok(service.updateArchivedStatus(bookId, connectedUser));
     }
 
-    @PostMapping("borrow/{book-id}")
+    @PostMapping("/borrow/{book-id}")
     public ResponseEntity<Integer> borrowBook(
             @PathVariable("book-id") Integer bookId,
             Authentication connectedUser
@@ -97,7 +98,7 @@ public class BookController {
         return ResponseEntity.ok(service.borrowBook(bookId, connectedUser));
     }
 
-    @PatchMapping("borrow/return/{book-id}")
+    @PatchMapping("/borrow/return/{book-id}")
     public ResponseEntity<Integer> returnBorrowBook(
             @PathVariable("book-id") Integer bookId,
             Authentication connectedUser
@@ -105,7 +106,7 @@ public class BookController {
         return ResponseEntity.ok(service.returnBorrowedBook(bookId, connectedUser));
     }
 
-    @PatchMapping("borrow/return/approve/{book-id}")
+    @PatchMapping("/borrow/return/approve/{book-id}")
     public ResponseEntity<Integer> approveReturnBorrowBook(
             @PathVariable("book-id") Integer bookId,
             Authentication connectedUser
@@ -124,8 +125,13 @@ public class BookController {
         return ResponseEntity.accepted().build();
     }
 
-    @GetMapping("/hello")
-    public ResponseEntity<String> hello() {
-        return ResponseEntity.ok("Hello Oauth2");
+    @PatchMapping(value = "/update/{book-id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void updateBook(
+            @PathVariable("book-id") Integer bookId,
+            BookRequest request,
+            Authentication connectedUser,
+            @RequestPart("file") MultipartFile file
+    ) {
+        service.updateBook(request, connectedUser, bookId, file);
     }
 }

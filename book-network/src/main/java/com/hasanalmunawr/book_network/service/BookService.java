@@ -21,7 +21,7 @@ public interface BookService {
     void uploadBookCoverPicture(MultipartFile file, Authentication connectedUser, Integer bookId);
     PageResponse<BorrowedBookResponse> findAllBorrowedBooks(int page, int size, Authentication connectedUser);
     PageResponse<BorrowedBookResponse> findAllReturnedBooks(int page, int size, Authentication connectedUser);
-
+    void updateBook(BookRequest request, Authentication connectedUser, Integer bookId, MultipartFile file);
 
 
 
