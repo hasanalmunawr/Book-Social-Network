@@ -4,6 +4,7 @@ import com.hasanalmunawr.book_network.common.BaseEntity;
 import com.hasanalmunawr.book_network.feedback.FeedBackEntity;
 import com.hasanalmunawr.book_network.history.TransactionHistoryEntity;
 import com.hasanalmunawr.book_network.user.UserEntity;
+import com.hasanalmunawr.book_network.wishlist.WishlistEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,6 +40,9 @@ public class BookEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "book")
     private List<TransactionHistoryEntity> histories;
+
+    @ManyToMany(mappedBy = "books")
+    private List<WishlistEntity> wishlists;
 
 
     @Transient
