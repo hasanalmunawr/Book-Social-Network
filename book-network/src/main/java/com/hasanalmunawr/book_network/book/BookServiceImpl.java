@@ -7,10 +7,8 @@ import com.hasanalmunawr.book_network.history.TransactionHistoryEntity;
 import com.hasanalmunawr.book_network.history.TransactionHistoryRepository;
 import com.hasanalmunawr.book_network.service.BookService;
 import com.hasanalmunawr.book_network.user.UserEntity;
-import com.hasanalmunawr.book_network.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -244,5 +242,23 @@ class BookServiceImpl implements BookService {
         bookEntity.setBookCover(pathFile);
         bookEntity.setUpdatedBy(connectedUser.getName());
         bookRepository.save(bookEntity);
+    }
+
+    @Override
+    public PageResponse<BookResponse> searchBook(Authentication connectedUser, String keywordSearch, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<BookEntity> books = bookRepository.findByTitleContainingIgnoreCase(keywordSearch, pageable);
+        List<BookResponse> booksResponse = books.stream()
+                .map(bookMapper::toBookResponse)
+                .toList();
+        return new PageResponse<>(
+                booksResponse,
+                books.getNumber(),
+                books.getSize(),
+                books.getTotalElements(),
+                books.getTotalPages(),
+                books.isFirst(),
+                books.isLast()
+        );
     }
 }
