@@ -29,7 +29,7 @@ Book Social Network is a full-stack application that enables users to manage the
 
 ## Learning Objectives
 
-By following this project, students will learn:
+By creating this project, i'm learned:
 
 - Designing a class diagram from business requirements
 - Implementing a mono repo approach
