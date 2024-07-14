@@ -22,7 +22,5 @@ public interface BookService {
     PageResponse<BorrowedBookResponse> findAllBorrowedBooks(int page, int size, Authentication connectedUser);
     PageResponse<BorrowedBookResponse> findAllReturnedBooks(int page, int size, Authentication connectedUser);
     void updateBook(BookRequest request, Authentication connectedUser, Integer bookId, MultipartFile file);
-
-
-
+    PageResponse<BookResponse> searchBook(Authentication connectedUser, String keywordSearch, int page, int size);
 }
