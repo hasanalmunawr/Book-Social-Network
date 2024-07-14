@@ -2,6 +2,7 @@ package com.hasanalmunawr.book_network.book;
 
 import com.hasanalmunawr.book_network.common.PageResponse;
 import com.hasanalmunawr.book_network.service.BookService;
+import com.hasanalmunawr.book_network.service.WishlistService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class BookController {
 
     private final BookService service;
+    private final WishlistService wishlistService;
 
     @PostMapping
     public ResponseEntity<Integer> saveBook(
@@ -133,5 +135,41 @@ public class BookController {
             @RequestPart("file") MultipartFile file
     ) {
         service.updateBook(request, connectedUser, bookId, file);
+    }
+
+    @PostMapping(value = "/wishlist/{book-id}")
+    public void addWishlist(
+            @PathVariable("book-id") Integer bookId,
+            Authentication connectedUser
+    ) {
+        wishlistService.add(connectedUser, bookId);
+    }
+
+    @GetMapping(value = "/wishlist")
+    public ResponseEntity<PageResponse<BookResponse>> getAllWishlistByUser(
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size,
+            Authentication connectedUser
+    ) {
+       return ResponseEntity.ok(wishlistService.getAllWishlistByUser(connectedUser, size, page));
+    }
+
+    @DeleteMapping("/wishlist/{book-id}")
+    public void deleteWishlist(
+            @PathVariable("book-id") Integer bookId,
+            Authentication connectedUser
+    ) {
+        wishlistService.deleteWishlist(connectedUser, bookId);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<PageResponse<BookResponse>> searchBook(
+            Authentication connectedUser,
+            @RequestParam(value = "keywordSearch", required = false) String keywordSearch,
+             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+    @RequestParam(name = "size", defaultValue = "10", required = false) int size
+
+    ) {
+        return ResponseEntity.ok(service.searchBook(connectedUser, keywordSearch, page, size));
     }
 }
