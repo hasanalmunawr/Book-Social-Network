@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -33,6 +34,7 @@ public class BookController {
     }
 
     @GetMapping("/{book-id}")
+    @Cacheable(value = "books", key = "#bookId")
     public ResponseEntity<BookResponse> findBookById(
             @PathVariable("book-id") Integer bookId
     ) {
@@ -40,6 +42,7 @@ public class BookController {
     }
 
     @GetMapping
+    @Cacheable(value = "books", key = "#page + '-' + #size + '-' + #connectedUser.name")
     public ResponseEntity<PageResponse<BookResponse>> findAllBooks(
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
             @RequestParam(name = "size", defaultValue = "10", required = false) int size,
