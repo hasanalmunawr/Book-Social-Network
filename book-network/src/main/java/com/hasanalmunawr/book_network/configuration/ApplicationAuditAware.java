@@ -1,6 +1,5 @@
 package com.hasanalmunawr.book_network.configuration;
 
-import com.hasanalmunawr.book_network.user.UserEntity;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;

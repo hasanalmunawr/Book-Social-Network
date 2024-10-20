@@ -1,20 +1,21 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/book_social_network
-    username: postgres
-    password: badiro12
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:mariadb://localhost:13306/book_social_network
+    username: root
+    password:
+    driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: false # optioanal
+    show-sql: false # optional
     properties:
       hibernate:
         format_sql: true
-    database: postgresql
+    database-platform: org.hibernate.dialect.MariaDBDialect
 
 
-#  mail:
+
+  #  mail:
 #    host: localhost
 #    port: 1025
 #    username: hasan
@@ -30,10 +31,14 @@ spring:
 #        timeout: 3000
 #        writetimeout: 5000
   mail:
-    host: ${EMAIL_HOST_NAME}
+#    host: ${EMAIL_HOST_NAME}
+#    port: 587
+#    username: ${EMAIL_USER_NAME}
+#    password: ${EMAIL_PASSWORD}
+    host: smtp.gmail.com
     port: 587
-    username: ${EMAIL_USER_NAME}
-    password: ${EMAIL_PASSWORD}
+    username: hasanalmunawar01@gmail.com
+    password: badiro12
     properties:
       mail:
         smtp:

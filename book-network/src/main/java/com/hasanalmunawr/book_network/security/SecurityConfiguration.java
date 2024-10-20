@@ -12,6 +12,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -37,6 +40,17 @@ public class SecurityConfiguration {
             "/webjars/**",
             "/swagger-ui.html"
     };
+
+    @Bean
+    public JwtDecoder jwtDecoder() {
+        return new JwtDecoder() {
+            @Override
+            public Jwt decode(String token) throws JwtException {
+                return null;
+            }
+        };
+//        return NimbusJwtDecoder.withJwkSetUri("https://your-auth-server/.well-known/jwks.json").build();
+    }
 
 
 //    private final JwtFilter jwtAuthFilter;
