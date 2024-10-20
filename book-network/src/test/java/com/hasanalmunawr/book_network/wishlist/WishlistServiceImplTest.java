@@ -1,10 +1,13 @@
 package com.hasanalmunawr.book_network.wishlist;
 
-import com.hasanalmunawr.book_network.book.BookEntity;
-import com.hasanalmunawr.book_network.book.BookMapper;
-import com.hasanalmunawr.book_network.book.BookRepository;
-import com.hasanalmunawr.book_network.book.BookResponse;
-import com.hasanalmunawr.book_network.common.PageResponse;
+import com.hasanalmunawr.book_network.book.model.entity.BookEntity;
+import com.hasanalmunawr.book_network.book.model.mapper.BookMapper;
+import com.hasanalmunawr.book_network.book.repository.BookRepository;
+import com.hasanalmunawr.book_network.book.model.dto.BookResponse;
+import com.hasanalmunawr.book_network.book.model.dto.PageResponse;
+import com.hasanalmunawr.book_network.wishlist.model.WishlistEntity;
+import com.hasanalmunawr.book_network.wishlist.repository.WishlistRepository;
+import com.hasanalmunawr.book_network.wishlist.service.impl.WishlistServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

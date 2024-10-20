@@ -1,8 +1,7 @@
 package com.hasanalmunawr.book_network.event;
 
-import com.hasanalmunawr.book_network.model.MailReq;
-import com.hasanalmunawr.book_network.service.EmailService;
-import jakarta.validation.constraints.Email;
+import com.hasanalmunawr.book_network.email.model.MailReq;
+import com.hasanalmunawr.book_network.email.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
