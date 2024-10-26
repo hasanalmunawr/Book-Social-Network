@@ -3,7 +3,7 @@ package com.hasanalmunawr.book_network.auth.controller;
 import com.hasanalmunawr.book_network.auth.model.dto.AuthenticationRequest;
 import com.hasanalmunawr.book_network.auth.model.dto.AuthenticationResponse;
 import com.hasanalmunawr.book_network.auth.model.dto.RegistrationRequest;
-import com.hasanalmunawr.book_network.auth.service.impl.AuthenticationServiceImpl;
+import com.hasanalmunawr.book_network.auth.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 class AuthenticationController {
 
 
-    private final AuthenticationServiceImpl service;
+    private final AuthenticationService service;
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.ACCEPTED)

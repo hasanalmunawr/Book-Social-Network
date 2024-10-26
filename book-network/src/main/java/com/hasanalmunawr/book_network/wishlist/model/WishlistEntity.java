@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.CreatedBy;
 
 import java.util.List;
 
@@ -31,4 +32,9 @@ public class WishlistEntity extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "book_id")
     )
     private List<BookEntity> books;
+
+    @CreatedBy
+    @Column(nullable = false, updatable = false)
+    private String createdBy;
+
 }

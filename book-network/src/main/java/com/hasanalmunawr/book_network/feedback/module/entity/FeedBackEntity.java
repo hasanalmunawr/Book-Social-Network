@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.CreatedBy;
 
 @Getter
 @Setter
@@ -24,5 +25,10 @@ public class FeedBackEntity extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "book_id")
     private BookEntity book;
+
+    @CreatedBy
+    @Column(nullable = false, updatable = false)
+    private String createdBy;
+
 
 }

@@ -22,13 +22,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Optional;
 
-//@Service
+@Service
 @RequiredArgsConstructor
 @Slf4j
 class AuthenticationServiceImpl implements AuthenticationService {
@@ -51,7 +52,6 @@ class AuthenticationServiceImpl implements AuthenticationService {
     public void register(RegistrationRequest request) throws MessagingException {
         Optional<UserEntity> byEmail = userRepository.findByEmail(request.email());
         if (byEmail.isPresent()) {
-            log.warn("User with email {} already exists", request.email());
             throw new UserAlreadyExistException();
         }
 
@@ -59,7 +59,7 @@ class AuthenticationServiceImpl implements AuthenticationService {
                 .firstname(request.firstName())
                 .lastname(request.lastName())
                 .email(request.email())
-//                .password(passwordEncoder.encode(request.password()))
+                .password(passwordEncoder.encode(request.password()))
                 .accountLocked(false)
                 .enabled(false)
                 .role(convertToRole(request.role()))
@@ -72,7 +72,6 @@ class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public void activateAccount(String token) throws MessagingException {
         TokenEntity savedToken = tokenRepository.findByToken(token)
-                // todo exception has to be defined
                 .orElseThrow(() -> new RuntimeException("Invalid token"));
         if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
             sendValidationEmail(savedToken.getUser(), EmailTemplateName.ACTIVATE_ACCOUNT);

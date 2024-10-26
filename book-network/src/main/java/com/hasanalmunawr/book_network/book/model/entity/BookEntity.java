@@ -1,5 +1,6 @@
 package com.hasanalmunawr.book_network.book.model.entity;
 
+import com.hasanalmunawr.book_network.auth.model.entity.UserEntity;
 import com.hasanalmunawr.book_network.common.BaseEntity;
 import com.hasanalmunawr.book_network.feedback.module.entity.FeedBackEntity;
 import com.hasanalmunawr.book_network.history.model.TransactionHistoryEntity;
@@ -10,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.CreatedBy;
 
 import java.util.List;
 
@@ -30,9 +32,14 @@ public class BookEntity extends BaseEntity {
     private boolean archived;
     private boolean shareable;
 
-//    @ManyToOne
-//    @JoinColumn(name = "owner_id")
-//    private UserEntity owner;
+    @CreatedBy
+    @Column(nullable = false, updatable = false)
+    private String createdBy;
+
+
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private UserEntity owner;
 
     @OneToMany(mappedBy = "book")
     private List<FeedBackEntity> feedbacks;
