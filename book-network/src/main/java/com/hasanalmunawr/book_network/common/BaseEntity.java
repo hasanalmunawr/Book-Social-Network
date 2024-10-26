@@ -40,9 +40,6 @@ public abstract class BaseEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @CreatedBy
-    @Column(nullable = false, updatable = false)
-    private String createdBy;
 
     @LastModifiedBy
     @Column(insertable = false)

@@ -53,8 +53,8 @@ public class SecurityConfiguration {
     }
 
 
-//    private final JwtFilter jwtAuthFilter;
-//    private final AuthenticationProvider authenticationProvider;
+    private final JwtFilter jwtAuthFilter;
+    private final AuthenticationProvider authenticationProvider;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

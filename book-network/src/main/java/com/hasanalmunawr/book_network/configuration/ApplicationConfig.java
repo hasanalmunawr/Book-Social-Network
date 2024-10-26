@@ -28,20 +28,20 @@ import static org.springframework.http.HttpHeaders.*;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
-//    private final UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
 
     @Value("${application.cors.origins:*}")
     private List<String> allowedOrigin;
 
-   /* @Bean
+    @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
-    }*/
+    }
 
-   /* @Bean
+    @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
@@ -50,7 +50,6 @@ public class ApplicationConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-*/
     @Bean
     public AuditorAware<String> auditorAware() {
         return new ApplicationAuditAware();
@@ -81,7 +80,7 @@ public class ApplicationConfig {
     public CorsFilter corsFilter() {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         final CorsConfiguration config = new CorsConfiguration();
-        // config.setAllowCredentials(true);
+         config.setAllowCredentials(true);
         config.setAllowedOrigins(allowedOrigin);
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowedMethods(Arrays.asList("*"));
