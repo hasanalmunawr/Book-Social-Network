@@ -9,8 +9,5 @@ import lombok.Data;
 @Builder
 public class RegistrationResponse {
 
-    private String message;
-    private int statusCode;
-    private String activateUrl;
     private UserDetailsDto userDetails;
 }

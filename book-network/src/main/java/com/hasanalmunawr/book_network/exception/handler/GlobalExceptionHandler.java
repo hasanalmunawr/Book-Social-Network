@@ -2,7 +2,7 @@ package com.hasanalmunawr.book_network.exception.handler;
 
 import com.hasanalmunawr.book_network.exception.custom.ActivationTokenException;
 import com.hasanalmunawr.book_network.exception.custom.OperationNotPermittedException;
-import com.hasanalmunawr.book_network.exception.custom.UserAlreadyExistException;
+import com.hasanalmunawr.book_network.exception.custom.UserExistException;
 import jakarta.mail.MessagingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.hasanalmunawr.book_network.exception.handler.BusinessErrorCodes.*;
 import static org.springframework.http.HttpStatus.*;
@@ -23,27 +23,30 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(LockedException.class)
-    public ResponseEntity<ExceptionResponse> handleException(LockedException exp) {
+    public ResponseEntity<ExceptionResponse> handleException(LockedException ex) {
         return ResponseEntity
                 .status(UNAUTHORIZED)
                 .body(
                         ExceptionResponse.builder()
-                                .businessErrorCode(ACCOUNT_LOCKED.getCode())
-                                .businessErrorDescription(ACCOUNT_LOCKED.getDescription())
-                                .error(exp.getMessage())
+                                .status("error")
+                                .message("Account Locked")
+                                .code(UNAUTHORIZED.value())
+                                .error(ex.getMessage())
                                 .build()
                 );
     }
 
     @ExceptionHandler(DisabledException.class)
-    public ResponseEntity<ExceptionResponse> handleException(DisabledException exp) {
+    public ResponseEntity<ExceptionResponse> handleException(DisabledException ex) {
         return ResponseEntity
                 .status(UNAUTHORIZED)
                 .body(
                         ExceptionResponse.builder()
-                                .businessErrorCode(ACCOUNT_DISABLED.getCode())
-                                .businessErrorDescription(ACCOUNT_DISABLED.getDescription())
-                                .error(exp.getMessage())
+                                .status("error")
+                                .message("Account Disabled")
+                                .code(UNAUTHORIZED.value())
+                                .description("The account is disabled and cannot be accessed.")
+                                .error(ex.getMessage())
                                 .build()
                 );
     }
@@ -54,98 +57,106 @@ public class GlobalExceptionHandler {
                 .status(UNAUTHORIZED)
                 .body(
                         ExceptionResponse.builder()
-                                .businessErrorCode(BAD_CREDENTIALS.getCode())
-                                .businessErrorDescription(BAD_CREDENTIALS.getDescription())
-                                .error("Login and / or Password is incorrect")
+                                .status("error")
+                                .message("Unauthorized Access")
+                                .code(UNAUTHORIZED.value())
+                                .description("Email or password is incorrect.")
+                                .error("Invalid credentials provided.")
                                 .build()
                 );
     }
 
     @ExceptionHandler(MessagingException.class)
-    public ResponseEntity<ExceptionResponse> handleException(MessagingException exp) {
+    public ResponseEntity<ExceptionResponse> handleException(MessagingException ex) {
         return ResponseEntity
                 .status(INTERNAL_SERVER_ERROR)
                 .body(
                         ExceptionResponse.builder()
-                                .error(exp.getMessage())
+                                .status("error")
+                                .message("Messaging Error")
+                                .code(INTERNAL_SERVER_ERROR.value())
+                                .description("An error occurred while processing the messaging request.")
+                                .error(ex.getMessage())
                                 .build()
                 );
     }
 
     @ExceptionHandler(ActivationTokenException.class)
-    public ResponseEntity<ExceptionResponse> handleException(ActivationTokenException exp) {
+    public ResponseEntity<ExceptionResponse> handleException(ActivationTokenException ex) {
         return ResponseEntity
                 .status(BAD_REQUEST)
                 .body(
                         ExceptionResponse.builder()
-                                .error(exp.getMessage())
+                                .status("error")
+                                .message("Invalid Activation Token")
+                                .code(BAD_REQUEST.value())
+                                .description("The activation token provided is invalid or has expired.")
+                                .error(ex.getMessage())
                                 .build()
                 );
     }
 
     @ExceptionHandler(OperationNotPermittedException.class)
-    public ResponseEntity<ExceptionResponse> handleException(OperationNotPermittedException exp) {
+    public ResponseEntity<ExceptionResponse> handleException(OperationNotPermittedException ex) {
         return ResponseEntity
                 .status(BAD_REQUEST)
                 .body(
                         ExceptionResponse.builder()
-                                .error(exp.getMessage())
+                                .status("error")
+                                .message("Operation Not Permitted")
+                                .code(BAD_REQUEST.value())
+                                .description("You do not have permission to perform this operation.")
+                                .error(ex.getMessage())
                                 .build()
                 );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ExceptionResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exp) {
-        Set<String> errors = new HashSet<>();
-        exp.getBindingResult().getAllErrors()
-                .forEach(error -> {
-                    //var fieldName = ((FieldError) error).getField();
-                    var errorMessage = error.getDefaultMessage();
-                    errors.add(errorMessage);
-                });
+    public ResponseEntity<ExceptionResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        List<ExceptionResponse.ValidationError> errors = ex.getBindingResult().getFieldErrors()
+                .stream()
+                .map(error -> new ExceptionResponse.ValidationError(error.getField(), error.getDefaultMessage()))
+                .collect(Collectors.toList());
 
         return ResponseEntity
                 .status(BAD_REQUEST)
                 .body(
                         ExceptionResponse.builder()
-                                .validationErrors(errors)
-                                .build()
-                );
-    }
-
-    @ExceptionHandler(UserAlreadyExistException.class)
-    public ResponseEntity<ExceptionResponse> handleEmailAlreadyUse(Exception exp) {
-        return ResponseEntity
-                .status(BAD_REQUEST)
-                .body(
-                        ExceptionResponse.builder()
-                                .businessErrorDescription("Bad Request")
-                                .error(exp.getMessage())
+                                .status("error")
+                                .message("Validation Error")
+                                .code(BAD_REQUEST.value())
+                                .description("Validation failed for one or more fields.")
+                                .errors(errors)
                                 .build()
                 );
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ExceptionResponse> handleException(RuntimeException exp) {
-        return ResponseEntity
-                .status(BAD_REQUEST)
-                .body(
-                        ExceptionResponse.builder()
-                                .businessErrorDescription("Bad Request")
-                                .error(exp.getMessage())
-                                .build()
-                );
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ExceptionResponse> handleException(Exception exp) {
-        exp.printStackTrace();
+    public ResponseEntity<ExceptionResponse> handleException(RuntimeException ex) {
         return ResponseEntity
                 .status(INTERNAL_SERVER_ERROR)
                 .body(
                         ExceptionResponse.builder()
-                                .businessErrorDescription("Internal error, please contact the admin")
-                                .error(exp.getMessage())
+                                .status("error")
+                                .message("Internal Server Error")
+                                .code(INTERNAL_SERVER_ERROR.value())
+                                .description("An unexpected error occurred.")
+                                .error(ex.getMessage())
+                                .build()
+                );
+
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionResponse> handleException(Exception ex) {
+        return ResponseEntity
+                .status(INTERNAL_SERVER_ERROR)
+                .body(
+                        ExceptionResponse.builder()
+                                .status("error")
+                                .message("Internal error, please contact the admin")
+                                .code(INTERNAL_SERVER_ERROR.value())
+                                .error(ex.getMessage())
                                 .build()
                 );
     }
