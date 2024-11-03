@@ -1,8 +1,9 @@
 package com.hasanalmunawr.book_network.auth.controller;
 
+
 import com.hasanalmunawr.book_network.auth.model.dto.*;
 import com.hasanalmunawr.book_network.auth.service.AuthenticationService;
-import com.hasanalmunawr.book_network.common.response.ResponseMessage;
+import com.hasanalmunawr.book_network.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
