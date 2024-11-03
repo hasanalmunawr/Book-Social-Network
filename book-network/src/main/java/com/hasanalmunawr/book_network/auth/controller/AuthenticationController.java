@@ -25,12 +25,19 @@ class AuthenticationController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public ResponseEntity<RegistrationResponse> register(
+    public ResponseEntity<ApiResponse<RegistrationResponse>> register(
             @RequestBody @Valid RegistrationRequest request
     ) throws MessagingException {
         var registerResponse = service.register(request);
+
+        ApiResponse<RegistrationResponse> response = ApiResponse.<RegistrationResponse>builder()
+                .success(true)
+                .message("Successfully registered")
+                .data(registerResponse)
+                .build();
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(registerResponse);
+                .body(response);
     }
 
     @PostMapping("/activate-account")

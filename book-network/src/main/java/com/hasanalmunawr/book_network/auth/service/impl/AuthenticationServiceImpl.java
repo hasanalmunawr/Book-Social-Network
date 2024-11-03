@@ -2,8 +2,8 @@ package com.hasanalmunawr.book_network.auth.service.impl;
 
 import com.hasanalmunawr.book_network.auth.model.dto.*;
 import com.hasanalmunawr.book_network.email.model.EmailTemplateName;
-import com.hasanalmunawr.book_network.exception.custom.UserAlreadyExistException;
 import com.hasanalmunawr.book_network.auth.model.enums.Role;
+import com.hasanalmunawr.book_network.exception.custom.UserExistException;
 import com.hasanalmunawr.book_network.security.JwtService;
 import com.hasanalmunawr.book_network.auth.service.AuthenticationService;
 import com.hasanalmunawr.book_network.email.service.EmailService;
@@ -51,7 +51,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public RegistrationResponse register(RegistrationRequest request) throws MessagingException {
         Optional<UserEntity> byEmail = userRepository.findByEmail(request.email());
         if (byEmail.isPresent()) {
-            throw new UserAlreadyExistException("Email Already Registered");
+            throw new UserExistException("This Email Already Used");
         }
 
         UserEntity user = UserEntity.builder()
@@ -67,9 +67,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         sendValidationEmail(userSaved);
 
         return RegistrationResponse.builder()
-                .message("Successfully registered")
-                .statusCode(HttpStatus.CREATED.value())
-                .activateUrl(activationUrl)
                 .userDetails(UserDetailsDto.builder()
                         .username(userSaved.getFirstname())
                         .email(userSaved.getEmail())
@@ -118,7 +115,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         var jwtToken = jwtService.generateToken(claims, (UserEntity) auth.getPrincipal());
         return AuthenticationResponse.builder()
-                .message("Successfully logged in")
                 .userDetails(UserDetailsDto.builder()
                         .username(user.getEmail())
                         .email(user.getEmail())
