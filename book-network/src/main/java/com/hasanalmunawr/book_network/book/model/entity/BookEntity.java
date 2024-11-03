@@ -32,11 +32,6 @@ public class BookEntity extends BaseEntity {
     private boolean archived;
     private boolean shareable;
 
-    @CreatedBy
-    @Column(nullable = false, updatable = false)
-    private String createdBy;
-
-
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private UserEntity owner;

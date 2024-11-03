@@ -1,9 +1,9 @@
 package com.hasanalmunawr.book_network.auth.controller;
 
-import com.hasanalmunawr.book_network.auth.model.dto.AuthenticationRequest;
-import com.hasanalmunawr.book_network.auth.model.dto.AuthenticationResponse;
-import com.hasanalmunawr.book_network.auth.model.dto.RegistrationRequest;
+
+import com.hasanalmunawr.book_network.auth.model.dto.*;
 import com.hasanalmunawr.book_network.auth.service.AuthenticationService;
+import com.hasanalmunawr.book_network.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -25,26 +25,28 @@ class AuthenticationController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public ResponseEntity<?> register(
+    public ResponseEntity<RegistrationResponse> register(
             @RequestBody @Valid RegistrationRequest request
     ) throws MessagingException {
-        service.register(request);
-        return ResponseEntity.accepted().build();
+        var registerResponse = service.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(registerResponse);
     }
 
     @PostMapping("/activate-account")
-    public void confirm(
+    public ResponseEntity<ActivateResponse> confirm(
             @RequestParam String token
     ) throws MessagingException {
-        log.info("[AuthenticationController:confirm] received activation token: {}", token);
-        service.activateAccount(token);
+        var activateResponse = service.activateAccount(token);
+        return ResponseEntity.ok(activateResponse);
     }
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthenticationRequest request
     ) throws MessagingException {
-        return ResponseEntity.ok(service.login(request));
+        var loginResponse = service.login(request);
+        return ResponseEntity.ok(loginResponse);
     }
 
 

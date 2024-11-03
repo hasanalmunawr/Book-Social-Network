@@ -8,12 +8,12 @@ import jakarta.validation.constraints.Size;
 
 public record RegistrationRequest(
 
-        @NotEmpty(message = "Firstname is mandatory")
-        @NotNull(message = "Firstname is mandatory")
-        @JsonProperty(namespace = "first_name")
-        String firstName,
-        @JsonProperty(namespace = "last_name")
-        String lastName,
+        @NotEmpty(message = "username is mandatory")
+        @NotNull(message = "username is mandatory")
+        @JsonProperty(namespace = "username")
+        String username,
+     /*   @JsonProperty(namespace = "last_name")
+        String lastName,*/
 
         @Email(message = "Email is not well formatted")
         @NotEmpty(message = "Email is mandatory")

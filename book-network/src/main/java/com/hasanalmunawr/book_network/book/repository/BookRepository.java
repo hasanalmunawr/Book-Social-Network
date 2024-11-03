@@ -15,9 +15,9 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer>, JpaS
             SELECT b FROM BookEntity b
             WHERE b.archived = false 
             AND b.shareable = true 
-            AND b.createdBy  != :userId 
+            AND b.owner.id  != :userId 
             """)
-    Page<BookEntity> findAllDisplayableBooks(Pageable pageable, String userId);
+    Page<BookEntity> findAllDisplayableBooks(Pageable pageable, Integer userId);
 
     @Query("""
     SELECT b FROM BookEntity b

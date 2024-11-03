@@ -40,7 +40,7 @@ public class FeedBackServiceImpl implements FeedBackService {
         }
 
         UserEntity user = ((UserEntity) connectedUser.getPrincipal());
-        if (Objects.equals(book.getCreatedBy(), connectedUser.getName())) {
+        if (Objects.equals(book.getOwner().getId(), user.getId())) {
             throw new OperationNotPermittedException("You cannot give feedback to your own book");
         }
 
