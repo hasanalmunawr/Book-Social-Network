@@ -2,6 +2,7 @@ package com.hasanalmunawr.book_network.exception.handler;
 
 import com.hasanalmunawr.book_network.exception.custom.ActivationTokenException;
 import com.hasanalmunawr.book_network.exception.custom.OperationNotPermittedException;
+import com.hasanalmunawr.book_network.exception.custom.UserAlreadyExistException;
 import jakarta.mail.MessagingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -108,6 +109,30 @@ public class GlobalExceptionHandler {
                 .body(
                         ExceptionResponse.builder()
                                 .validationErrors(errors)
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(UserAlreadyExistException.class)
+    public ResponseEntity<ExceptionResponse> handleEmailAlreadyUse(Exception exp) {
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorDescription("Bad Request")
+                                .error(exp.getMessage())
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ExceptionResponse> handleException(RuntimeException exp) {
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorDescription("Bad Request")
+                                .error(exp.getMessage())
                                 .build()
                 );
     }

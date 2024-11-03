@@ -43,9 +43,9 @@ class BookServiceImpl implements BookService {
 
     @Override
     public Integer save(BookRequest request, Authentication connectedUser) {
-//        UserEntity user = ((UserEntity) connectedUser.getPrincipal());
+        UserEntity user = ((UserEntity) connectedUser.getPrincipal());
         BookEntity book = bookMapper.toBook(request);
-        book.setCreatedBy(connectedUser.getName());
+        book.setOwner(user);
         return bookRepository.save(book).getId();
     }
 
@@ -58,9 +58,9 @@ class BookServiceImpl implements BookService {
 
     @Override
     public PageResponse<BookResponse> findAllBooks(int page, int size, Authentication connectedUser) {
-//        UserEntity user = ((UserEntity) connectedUser.getPrincipal());
+        UserEntity user = ((UserEntity) connectedUser.getPrincipal());
         Pageable pageable = PageRequest.of(page, size);
-        Page<BookEntity> books = bookRepository.findAllDisplayableBooks(pageable, connectedUser.getName());
+        Page<BookEntity> books = bookRepository.findAllDisplayableBooks(pageable, user.getId());
         log.info("[BookServiceImpl:FIndAllBooksByOwner] user id {}", connectedUser.getName());
         List<BookResponse> booksResponse = books.stream()
                 .map(bookMapper::toBookResponse)
@@ -79,9 +79,9 @@ class BookServiceImpl implements BookService {
 
     @Override
     public PageResponse<BookResponse> findAllBooksByOwner(int page, int size, Authentication connectedUser) {
-//        UserEntity user = ((UserEntity) connectedUser.getPrincipal());
+        UserEntity user = ((UserEntity) connectedUser.getPrincipal());
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdBy").descending());
-        Page<BookEntity> books = bookRepository.findAll(withOwnerId(connectedUser.getName()), pageable);
+        Page<BookEntity> books = bookRepository.findAll(withOwnerId(user.getId()), pageable);
         List<BookResponse> booksResponse = books.stream()
                 .map(bookMapper::toBookResponse)
                 .toList();
@@ -100,8 +100,8 @@ class BookServiceImpl implements BookService {
     public Integer updateShareableStatus(Integer bookId, Authentication connectedUser) {
         BookEntity book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new EntityNotFoundException("No book found with ID:: " + bookId));
-//        UserEntity user = ((UserEntity) connectedUser.getPrincipal());
-        if (!Objects.equals(book.getCreatedBy(), connectedUser.getName())) {
+        UserEntity user = ((UserEntity) connectedUser.getPrincipal());
+        if (!Objects.equals(book.getOwner().getId(), user.getId())) {
             throw new OperationNotPermittedException("You cannot update others books shareable status");
         }
         book.setShareable(!book.isShareable());
@@ -113,8 +113,8 @@ class BookServiceImpl implements BookService {
     public Integer updateArchivedStatus(Integer bookId, Authentication connectedUser) {
         BookEntity book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new EntityNotFoundException("No book found with ID:: " + bookId));
-//        UserEntity user = ((UserEntity) connectedUser.getPrincipal());
-        if (!Objects.equals(book.getCreatedBy(), connectedUser.getName())) {
+        UserEntity user = ((UserEntity) connectedUser.getPrincipal());
+        if (!Objects.equals(book.getOwner().getId(), user.getId())) {
             throw new OperationNotPermittedException("You cannot update others books archived status");
         }
         book.setArchived(!book.isArchived());
@@ -129,8 +129,8 @@ class BookServiceImpl implements BookService {
         if (book.isArchived() || !book.isShareable()) {
             throw new OperationNotPermittedException("The requested book cannot be borrowed since it is archived or not shareable");
         }
-//        UserEntity user = ((UserEntity) connectedUser.getPrincipal());
-        if (Objects.equals(book.getCreatedBy(), connectedUser.getName())) {
+        UserEntity user = ((UserEntity) connectedUser.getPrincipal());
+        if (Objects.equals(book.getOwner().getId(), user.getId())) {
             throw new OperationNotPermittedException("You cannot borrow your own book");
         }
         final boolean isAlreadyBorrowedByUser = historyRepository.isAlreadyBorrowedByUser(bookId, connectedUser.getName());
@@ -159,8 +159,8 @@ class BookServiceImpl implements BookService {
         if (book.isArchived() || !book.isShareable()) {
             throw new OperationNotPermittedException("The requested book is archived or not shareable");
         }
-//        UserEntity user = ((UserEntity) connectedUser.getPrincipal());
-        if (Objects.equals(book.getCreatedBy(), connectedUser.getName())) {
+        UserEntity user = ((UserEntity) connectedUser.getPrincipal());
+        if (Objects.equals(book.getOwner().getId(), user.getId())) {
             throw new OperationNotPermittedException("You cannot borrow or return your own book");
         }
 
@@ -179,11 +179,11 @@ class BookServiceImpl implements BookService {
             throw new OperationNotPermittedException("The requested book is archived or not shareable");
         }
         UserEntity user = ((UserEntity) connectedUser.getPrincipal());
-        if (!Objects.equals(book.getCreatedBy(), connectedUser.getName())) {
+        if (!Objects.equals(book.getOwner().getId(), user.getId())) {
             throw new OperationNotPermittedException("You cannot approve the return of a book you do not own");
         }
 
-        TransactionHistoryEntity bookTransactionHistory = historyRepository.findByBookIdAndOwnerId(bookId, connectedUser.getName())
+        TransactionHistoryEntity bookTransactionHistory = historyRepository.findByBookIdAndOwnerId(bookId, user.getId())
                 .orElseThrow(() -> new OperationNotPermittedException("The book is not returned yet. You cannot approve its return"));
 
         bookTransactionHistory.setReturnApproved(true);
@@ -202,9 +202,9 @@ class BookServiceImpl implements BookService {
 
     @Override
     public PageResponse<BorrowedBookResponse> findAllBorrowedBooks(int page, int size, Authentication connectedUser) {
-//        UserEntity user = ((UserEntity) connectedUser.getPrincipal());
+        UserEntity user = ((UserEntity) connectedUser.getPrincipal());
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<TransactionHistoryEntity> allBorrowedBooks = historyRepository.findAllBorrowedBooks(pageable, connectedUser.getName());
+        Page<TransactionHistoryEntity> allBorrowedBooks = historyRepository.findAllBorrowedBooks(pageable, user.getId());
         List<BorrowedBookResponse> booksResponse = allBorrowedBooks.stream()
                 .map(bookMapper::toBorrowedBookResponse)
                 .toList();
@@ -221,9 +221,9 @@ class BookServiceImpl implements BookService {
 
     @Override
     public PageResponse<BorrowedBookResponse> findAllReturnedBooks(int page, int size, Authentication connectedUser) {
-//        UserEntity user = ((UserEntity) connectedUser.getPrincipal());
+        UserEntity user = ((UserEntity) connectedUser.getPrincipal());
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<TransactionHistoryEntity> allBorrowedBooks = historyRepository.findAllReturnedBooks(pageable, connectedUser.getName());
+        Page<TransactionHistoryEntity> allBorrowedBooks = historyRepository.findAllReturnedBooks(pageable, user.getId());
         List<BorrowedBookResponse> booksResponse = allBorrowedBooks.stream()
                 .map(bookMapper::toBorrowedBookResponse)
                 .toList();

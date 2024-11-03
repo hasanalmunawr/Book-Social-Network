@@ -1,8 +1,6 @@
 package com.hasanalmunawr.book_network.auth.service.impl;
 
-import com.hasanalmunawr.book_network.auth.model.dto.AuthenticationRequest;
-import com.hasanalmunawr.book_network.auth.model.dto.AuthenticationResponse;
-import com.hasanalmunawr.book_network.auth.model.dto.RegistrationRequest;
+import com.hasanalmunawr.book_network.auth.model.dto.*;
 import com.hasanalmunawr.book_network.email.model.EmailTemplateName;
 import com.hasanalmunawr.book_network.exception.custom.UserAlreadyExistException;
 import com.hasanalmunawr.book_network.auth.model.enums.Role;
@@ -17,6 +15,7 @@ import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,7 +31,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-class AuthenticationServiceImpl implements AuthenticationService {
+public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     private final UserRepository userRepository;
@@ -49,15 +48,14 @@ class AuthenticationServiceImpl implements AuthenticationService {
     private long expiryToken;
 
     @Override
-    public void register(RegistrationRequest request) throws MessagingException {
+    public RegistrationResponse register(RegistrationRequest request) throws MessagingException {
         Optional<UserEntity> byEmail = userRepository.findByEmail(request.email());
         if (byEmail.isPresent()) {
-            throw new UserAlreadyExistException();
+            throw new UserAlreadyExistException("Email Already Registered");
         }
 
         UserEntity user = UserEntity.builder()
-                .firstname(request.firstName())
-                .lastname(request.lastName())
+                .firstname(request.username())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
                 .accountLocked(false)
@@ -65,16 +63,27 @@ class AuthenticationServiceImpl implements AuthenticationService {
                 .role(convertToRole(request.role()))
                 .build();
 
-        userRepository.save(user);
-        sendValidationEmail(user, EmailTemplateName.ACTIVATE_ACCOUNT);
+        UserEntity userSaved = userRepository.save(user);
+        sendValidationEmail(userSaved);
+
+        return RegistrationResponse.builder()
+                .message("Successfully registered")
+                .statusCode(HttpStatus.CREATED.value())
+                .activateUrl(activationUrl)
+                .userDetails(UserDetailsDto.builder()
+                        .username(userSaved.getFirstname())
+                        .email(userSaved.getEmail())
+                        .role(userSaved.getRole().name())
+                        .build())
+                .build();
     }
 
     @Override
-    public void activateAccount(String token) throws MessagingException {
+    public ActivateResponse activateAccount(String token) throws MessagingException {
         TokenEntity savedToken = tokenRepository.findByToken(token)
                 .orElseThrow(() -> new RuntimeException("Invalid token"));
         if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
-            sendValidationEmail(savedToken.getUser(), EmailTemplateName.ACTIVATE_ACCOUNT);
+            sendValidationEmail(savedToken.getUser());
             throw new RuntimeException("Activation token has expired. A new token has been send to the same email address");
         }
 
@@ -85,6 +94,11 @@ class AuthenticationServiceImpl implements AuthenticationService {
 
         savedToken.setValidatedAt(LocalDateTime.now());
         tokenRepository.save(savedToken);
+
+        return ActivateResponse.builder()
+                .success(true)
+                .message("Success Activated Account")
+                .build();
     }
 
     @Override
@@ -104,11 +118,16 @@ class AuthenticationServiceImpl implements AuthenticationService {
 
         var jwtToken = jwtService.generateToken(claims, (UserEntity) auth.getPrincipal());
         return AuthenticationResponse.builder()
+                .message("Successfully logged in")
+                .userDetails(UserDetailsDto.builder()
+                        .username(user.getEmail())
+                        .email(user.getEmail())
+                        .role(user.getRole().name())
+                        .build())
+                .tokenExpiry(String.valueOf(expiryToken))
                 .token(jwtToken)
                 .build();
-
     }
-
 
     private Role convertToRole(String role) {
         // JUST RECEIVE ROLE EITHER 'admin' OR 'user'
@@ -121,13 +140,13 @@ class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    private void sendValidationEmail(UserEntity user, EmailTemplateName templateName) throws MessagingException, MessagingException {
+    private void sendValidationEmail(UserEntity user) throws MessagingException, MessagingException {
         var newToken = generateAndSaveActivationToken(user);
 
         emailService.sendEmailGoogle(
                 user.getEmail(),
                 user.getFullName(),
-                templateName,
+                EmailTemplateName.ACTIVATE_ACCOUNT,
                 newToken,
                 "Account activation"
         );
@@ -135,7 +154,7 @@ class AuthenticationServiceImpl implements AuthenticationService {
 
     private String generateAndSaveActivationToken(UserEntity user) {
         // Generate a token
-        String generatedToken = generateActivationCode(6);
+        String generatedToken = generateActivationCode();
         var token = TokenEntity.builder()
                 .token(generatedToken)
                 .createdAt(LocalDateTime.now())
@@ -147,13 +166,13 @@ class AuthenticationServiceImpl implements AuthenticationService {
         return generatedToken;
     }
 
-    private String generateActivationCode(int length) {
+    private String generateActivationCode() {
         String characters = "0123456789";
         StringBuilder codeBuilder = new StringBuilder();
 
         SecureRandom secureRandom = new SecureRandom();
 
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < 6; i++) {
             int randomIndex = secureRandom.nextInt(characters.length());
             codeBuilder.append(characters.charAt(randomIndex));
         }

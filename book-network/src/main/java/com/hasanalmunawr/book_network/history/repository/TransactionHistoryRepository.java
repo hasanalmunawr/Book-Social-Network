@@ -44,25 +44,25 @@ public interface TransactionHistoryRepository extends JpaRepository<TransactionH
     @Query("""
             SELECT history
             FROM TransactionHistoryEntity history
-            WHERE history.book.createdBy = :userId
+            WHERE history.book.owner.id = :userId
             AND history.book.id = :bookId
             AND history.returned = true
             AND history.returnApproved = false
             """)
-    Optional<TransactionHistoryEntity> findByBookIdAndOwnerId(@Param("bookId") Integer bookId, @Param("userId") String userId);
+    Optional<TransactionHistoryEntity> findByBookIdAndOwnerId(@Param("bookId") Integer bookId, @Param("userId") Integer userId);
 
     @Query("""
             SELECT history
             FROM TransactionHistoryEntity history
             WHERE history.userId = :userId
             """)
-    Page<TransactionHistoryEntity> findAllBorrowedBooks(Pageable pageable, String userId);
+    Page<TransactionHistoryEntity> findAllBorrowedBooks(Pageable pageable, Integer userId);
 
     @Query("""
             SELECT history
             FROM TransactionHistoryEntity history
-            WHERE history.book.createdBy = :userId
+            WHERE history.book.owner.id = :userId
             """)
-    Page<TransactionHistoryEntity> findAllReturnedBooks(Pageable pageable, String userId);
+    Page<TransactionHistoryEntity> findAllReturnedBooks(Pageable pageable, Integer userId);
 
 }
