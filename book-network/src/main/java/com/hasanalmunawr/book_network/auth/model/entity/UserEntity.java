@@ -1,5 +1,6 @@
 package com.hasanalmunawr.book_network.auth.model.entity;
 
+import com.hasanalmunawr.book_network.book.model.entity.BookEntity;
 import com.hasanalmunawr.book_network.common.BaseEntity;
 import com.hasanalmunawr.book_network.auth.model.enums.Role;
 import jakarta.persistence.*;
@@ -15,6 +16,7 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 
 
 @Getter
@@ -39,6 +41,9 @@ public class UserEntity extends BaseEntity implements UserDetails, Principal{
     private LocalDateTime lastLogin;
     private boolean accountLocked;
     private boolean enabled;
+
+    @OneToMany(mappedBy = "owner")
+    private List<BookEntity> books;
 
 
 

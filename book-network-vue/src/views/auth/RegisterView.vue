@@ -1,5 +1,38 @@
 <script setup>
+import { ref } from 'vue';
+import axios from '../../axiosConfig.js';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
+
+const username = ref("");
+const email = ref("");
+const password = ref("");
+const confirmPassword = ref("");
+const role = ref("user");
+
+const errorMessage = ref("");
+
+const register = async () => {
+  try {
+    const response = await axios.post('/api/v1/auth/register', {
+      username: username.value,
+      email: email.value,
+      password: password.value,
+      role: role.value
+    });
+    await router.push({name: 'activate-account'})
+  } catch (error) {
+    console.error('Registration error:', error);
+
+    if (error.response && error.response.data) {
+      const { businessErrorDescription, error: defaultError } = error.response.data;
+      errorMessage.value = defaultError || businessErrorDescription || "An unexpected error occurred.";
+    } else {
+      errorMessage.value = "An unexpected error occurred.";
+    }
+  }
+}
 </script>
 
 <template>
@@ -7,12 +40,19 @@
     <div class="max-w-md w-full space-y-8 p-10 bg-white shadow-md rounded-lg">
       <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Register</h2>
 
+      <div v-if="errorMessage" class="bg-red-100 border border-red-400 text-red-600 rounded-lg p-4 mb-4">
+        <div class="flex items-center">
+          <font-awesome-icon icon="exclamation-circle" class="mr-2" />
+          <p class="text-center">{{ errorMessage }}</p>
+        </div>
+      </div>
+
       <!-- Registration Form -->
-      <form @submit.prevent="handleRegister" class="mt-6 space-y-6">
+      <form @submit.prevent="register" class="mt-6 space-y-6">
         <div>
-          <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+          <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
           <div class="mt-1">
-            <input id="name" type="text" v-model="name" required
+            <input id="username" type="text" v-model="username" required
                    class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                    placeholder="Your Name"/>
           </div>
@@ -59,7 +99,7 @@
       <div class="flex flex-col gap-4 mt-4">
         <a href="/auth/google"
            class="flex items-center justify-center py-3 px-6 border border-gray-400 rounded-md shadow-sm text-lg font-medium text-black bg-white hover:bg-gray-200 transition duration-200">
-          <img class="h-8 w-8 mr-2" src="../assets/images/7123025_logo_google_g_icon%20(1).png" alt="Google Icon">
+          <img class="h-8 w-8 mr-2" src="../../assets/images/7123025_logo_google_g_icon%20(1).png" alt="Google Icon">
           <span>Register with Google</span>
         </a>
       </div>

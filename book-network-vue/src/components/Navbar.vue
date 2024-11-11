@@ -28,8 +28,8 @@ document.addEventListener('click', closeDropDown);
 <template>
   <nav
       :class="{
-      'bg-sky-600 dark:bg-sky-800': true,
-      'border-b border-sky-700 dark:border-sky-900': true,
+      'bg-white dark:bg-slate-800': true,
+      'border-b border-gray-200 dark:border-slate-700': true,
     }"
   >
     <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -38,9 +38,10 @@ document.addEventListener('click', closeDropDown);
         <RouterLink class="flex flex-shrink-0 items-center mr-4" to="/">
           <img class="h-10 w-auto" :src="Logo" alt="Book Icon" />
           <span
-              class="hidden md:block text-white dark:text-gray-200 text-2xl font-bold ml-2"
-          >Book Network</span
+              class="hidden md:block text-gray-900 dark:text-gray-200 text-2xl font-bold ml-2"
           >
+            Book Network
+          </span>
         </RouterLink>
 
         <!-- Menu Section -->
@@ -49,9 +50,9 @@ document.addEventListener('click', closeDropDown);
               to="/dashboard"
               :class="[
               isActiveLink('/dashboard')
-                ? 'bg-sky-700 dark:bg-sky-900'
-                : 'hover:bg-sky-500 dark:hover:bg-sky-700 hover:text-white',
-              'text-white dark:text-gray-200',
+                ? 'bg-gray-100 dark:bg-slate-900'
+                : 'hover:bg-sky-500 dark:hover:bg-gray-700 hover:text-white',
+              'text-gray-900 dark:text-gray-200',
               'px-3 py-2 rounded-md',
             ]"
           >
@@ -61,9 +62,9 @@ document.addEventListener('click', closeDropDown);
               to="/my-books"
               :class="[
               isActiveLink('/my-books')
-                ? 'bg-sky-700 dark:bg-sky-900'
-                : 'hover:bg-sky-500 dark:hover:bg-sky-700 hover:text-white',
-              'text-white dark:text-gray-200',
+                ? 'bg-gray-100 dark:bg-slate-900'
+                : 'hover:bg-sky-500 dark:hover:bg-gray-700 hover:text-white',
+              'text-gray-900 dark:text-gray-200',
               'px-3 py-2 rounded-md',
             ]"
           >
@@ -73,9 +74,9 @@ document.addEventListener('click', closeDropDown);
               to="/borrowed-book"
               :class="[
               isActiveLink('/borrowed-book')
-                ? 'bg-sky-700 dark:bg-sky-900'
-                : 'hover:bg-sky-500 dark:hover:bg-sky-700 hover:text-white',
-              'text-white dark:text-gray-200',
+                ? 'bg-gray-100 dark:bg-slate-900'
+                : 'hover:bg-sky-500 dark:hover:bg-gray-700 hover:text-white',
+              'text-gray-900 dark:text-gray-200',
               'px-3 py-2 rounded-md',
             ]"
           >
@@ -87,7 +88,7 @@ document.addEventListener('click', closeDropDown);
         <div class="flex items-center relative">
           <button
               @click="toggleDropDown"
-              class="text-white bg-sky-600 dark:bg-sky-700 hover:bg-sky-500 dark:hover:bg-sky-600 focus:ring-4 focus:outline-none focus:ring-sky-300 dark:focus:ring-sky-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
+              class="text-gray-900 bg-white dark:bg-slate-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-600 focus:ring-4 focus:outline-none focus:ring-gray-300 dark:focus:ring-slate-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
               type="button"
           >
             <font-awesome-icon :icon="['far', 'user']" class="mr-2" />
@@ -112,14 +113,14 @@ document.addEventListener('click', closeDropDown);
           <!-- Dropdown menu -->
           <div
               v-if="isDropDownOpen"
-              class="absolute mt-1 z-10 bg-sky-600 dark:bg-sky-800 divide-y divide-sky-700 dark:divide-sky-900 rounded-lg shadow w-44"
+              class="absolute mt-1 z-10 bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700 rounded-lg shadow w-44"
               style="top: 100%; left: 0;"
           >
-            <ul class="py-2 text-sm text-white dark:text-gray-200">
+            <ul class="py-2 text-sm text-gray-900 dark:text-gray-200">
               <li>
                 <a
                     href="#"
-                    class="block px-4 py-2 hover:bg-sky-500 dark:hover:bg-sky-700 dark:hover:text-white"
+                    class="block px-4 py-2 hover:bg-sky-500 dark:hover:bg-gray-700 dark:hover:text-white"
                 >
                   <font-awesome-icon :icon="['far', 'address-card']" class="mr-2" />
                   Profile
@@ -128,7 +129,7 @@ document.addEventListener('click', closeDropDown);
               <li>
                 <a
                     href="#"
-                    class="block px-4 py-2 hover:bg-sky-500 dark:hover:bg-sky-700 dark:hover:text-white"
+                    class="block px-4 py-2 hover:bg-sky-500 dark:hover:bg-gray-700 dark:hover:text-white"
                 >
                   <font-awesome-icon :icon="['fas', 'gear']" class="mr-2" />
                   Settings
@@ -137,17 +138,17 @@ document.addEventListener('click', closeDropDown);
               <li>
                 <a
                     href="#"
-                    class="block px-4 py-2 hover:bg-sky-500 dark:hover:bg-sky-700 dark:hover:text-white"
+                    class="block px-4 py-2 hover:bg-sky-500 dark:hover:bg-gray-700 dark:hover:text-white"
                 >
                   <font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" class="mr-2" />
                   Sign out
                 </a>
               </li>
               <!-- Improved Dark Mode Section -->
-              <li class="flex items-center px-4 py-2">
+<!--              <li class="flex items-center px-4 py-2">
                 <span class="mr-2">Dark Mode</span>
                 <DarkModeToggle />
-              </li>
+              </li>-->
             </ul>
           </div>
 
@@ -158,5 +159,5 @@ document.addEventListener('click', closeDropDown);
 </template>
 
 <style scoped>
-/* Tambahkan gaya tambahan di sini jika diperlukan */
+/* Additional styles if needed */
 </style>

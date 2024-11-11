@@ -42,11 +42,11 @@ class BookServiceImpl implements BookService {
 
 
     @Override
-    public Integer save(BookRequest request, Authentication connectedUser) {
+    public BookResponse save(BookRequest request, Authentication connectedUser) {
         UserEntity user = ((UserEntity) connectedUser.getPrincipal());
         BookEntity book = bookMapper.toBook(request);
         book.setOwner(user);
-        return bookRepository.save(book).getId();
+       return bookMapper.toBookResponse(bookRepository.save(book));
     }
 
     @Override
@@ -61,7 +61,6 @@ class BookServiceImpl implements BookService {
         UserEntity user = ((UserEntity) connectedUser.getPrincipal());
         Pageable pageable = PageRequest.of(page, size);
         Page<BookEntity> books = bookRepository.findAllDisplayableBooks(pageable, user.getId());
-        log.info("[BookServiceImpl:FIndAllBooksByOwner] user id {}", connectedUser.getName());
         List<BookResponse> booksResponse = books.stream()
                 .map(bookMapper::toBookResponse)
                 .toList();
@@ -80,7 +79,7 @@ class BookServiceImpl implements BookService {
     @Override
     public PageResponse<BookResponse> findAllBooksByOwner(int page, int size, Authentication connectedUser) {
         UserEntity user = ((UserEntity) connectedUser.getPrincipal());
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdBy").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("owner").descending());
         Page<BookEntity> books = bookRepository.findAll(withOwnerId(user.getId()), pageable);
         List<BookResponse> booksResponse = books.stream()
                 .map(bookMapper::toBookResponse)
