@@ -13,7 +13,6 @@ public class ApiResponse<T> {
     private Boolean success;
     private String message;
     private T data;
-    private ExceptionResponse error;
 
 
 }

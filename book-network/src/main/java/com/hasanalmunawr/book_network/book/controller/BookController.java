@@ -5,6 +5,7 @@ import com.hasanalmunawr.book_network.book.model.dto.BookResponse;
 import com.hasanalmunawr.book_network.book.model.dto.BorrowedBookResponse;
 import com.hasanalmunawr.book_network.book.model.dto.PageResponse;
 import com.hasanalmunawr.book_network.book.service.BookService;
+import com.hasanalmunawr.book_network.common.response.ApiResponse;
 import com.hasanalmunawr.book_network.wishlist.service.WishlistService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -28,11 +29,14 @@ public class BookController {
     private final WishlistService wishlistService;
 
     @PostMapping
-    public ResponseEntity<Integer> saveBook(
+    public ResponseEntity<ApiResponse<BookResponse>> saveBook(
             @Valid @RequestBody BookRequest request,
             Authentication connectedUser
     ) {
-        return ResponseEntity.ok(service.save(request, connectedUser));
+        BookResponse bookResponse = service.save(request, connectedUser);
+        ApiResponse<BookResponse> response = new ApiResponse<>(true, "Book Success Create", bookResponse);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{book-id}")

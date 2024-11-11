@@ -1,5 +1,31 @@
 <script setup>
+import axios from '../../axiosConfig.js';
+import { ref } from 'vue';
+import { useRouter } from "vue-router";
 
+const route = useRouter();
+
+const email = ref("");
+const password = ref("");
+const remember = ref("");
+const errorMessage = ref("");
+
+const login = async () => {
+  try {
+    const response = await axios.post('/api/v1/auth/authenticate', {
+      email: email.value,
+      password: password.value,
+    });
+    await route.push({name: 'dashboard'});
+  } catch (error) {
+    if (error.response && error.response.data) {
+      const { businessErrorDescription, error: defaultError } = error.response.data;
+      errorMessage.value = businessErrorDescription || defaultError || "An unexpected error occurred.";
+    } else {
+      errorMessage.value = "An unexpected error occurred.";
+    }
+  }
+}
 </script>
 
 <template>
@@ -7,8 +33,15 @@
     <div class="max-w-md w-full space-y-8 p-10 bg-white shadow-md rounded-lg">
       <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Login</h2>
 
+      <div v-if="errorMessage" class="bg-red-100 border border-red-400 text-red-600 rounded-lg p-4 mb-4">
+        <div class="flex items-center">
+          <font-awesome-icon icon="exclamation-circle" class="mr-2" />
+          <p class="text-center">{{ errorMessage }}</p>
+        </div>
+      </div>
+
       <!-- Email Login Form -->
-      <form @submit.prevent="handleLogin" class="mt-6 space-y-6">
+      <form @submit.prevent="login" class="mt-6 space-y-6">
         <div>
           <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
           <div class="mt-1">
@@ -55,7 +88,7 @@
       <!-- OAuth Buttons -->
       <div class="flex flex-col gap-4 mt-4">
         <a href="/auth/google" class="flex items-center justify-center py-3 px-6 border border-gray-400 rounded-md shadow-sm text-lg font-medium text-black bg-white hover:bg-gray-200 transition duration-200">
-          <img class="h-8 w-8 mr-2" src="../assets/images/7123025_logo_google_g_icon%20(1).png" alt="Google Icon">
+          <img class="h-8 w-8 mr-2" src="../../assets/images/7123025_logo_google_g_icon%20(1).png" alt="Google Icon">
           <span>Login with Google</span>
         </a>
       </div>
